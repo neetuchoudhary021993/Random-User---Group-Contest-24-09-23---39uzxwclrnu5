@@ -72,11 +72,61 @@ import '../styles/App.css';
 // }
 const App = () => {
   
+  const [user, setUser] = useState(null);
+  const [showInfo, setShowInfo] = useState(null);
+
+  const fetchUser = async () => {
+    try {
+      const response = await fetch('https://randomuser.me/api/');
+      const data = await response.json();
+      setUser(data.results[0]);
+      setShowInfo(null); // Reset the displayed info
+    } catch (error) {
+      console.error('Error fetching random user:', error);
+    }
+  };
+
+  const handleClick = (attribute) => {
+    setShowInfo(attribute);
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
   return (
     <div id="main">
-      
+      <h1>Random User Info</h1>
+      {user && (
+        <div>
+          <img src={user.picture.large} alt="image" />
+          <p>{`${user.name.first} ${user.name.last}`}</p>
+        </div>
+      )}
+      <div>
+        <h2>Additional Info</h2>
+        <button data-attr="age" onClick={() => handleClick('age')}>
+          Age
+        </button>
+        <button data-attr="email" onClick={() => handleClick('email')}>
+          Email
+        </button>
+        <button data-attr="phone" onClick={() => handleClick('phone')}>
+          Phone
+        </button>
+        {showInfo && (
+          <p>
+            {showInfo === 'age' && user ? `Age: ${user.dob.age}` : null}
+            {showInfo === 'email' && user ? `Email: ${user.email}` : null}
+            {showInfo  === 'phone' && user ? `Phone: ${user.phone}` : null}
+          </p>
+        )}
+      </div>
+      <button id="getUser" onClick={fetchUser}>
+        Get Another User
+      </button>
     </div>
-  )
+  );
 }
 
 
